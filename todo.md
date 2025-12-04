@@ -212,3 +212,16 @@
 - [x] Implement cuisine type filtering
 - [x] Add distance calculation helper (TODO for production)
 - [x] Test matching algorithm
+
+
+## Web UI Features - Phase 2
+- [x] Create SessionDetail page with apply button and status updates
+- [x] Create Messages page with conversation list
+- [x] Create ChatView component for individual conversations
+- [ ] Create RateUser page for submitting ratings after sessions
+- [ ] Create ViewRatings page to display user ratings
+- [ ] Create CreateSession page for hosts
+- [ ] Create ManageSessions page for hosts to view and manage their sessions
+- [ ] Update Dashboard with links to new pages
+- [x] Update App.tsx with new routes
+- [ ] Test all new pages
