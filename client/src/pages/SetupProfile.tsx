@@ -10,6 +10,7 @@ import { UtensilsCrossed, Home } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function SetupProfile() {
   const { user } = useAuth();
@@ -22,6 +23,7 @@ export default function SetupProfile() {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   
   // Dishwasher fields
   const [workRangeKm, setWorkRangeKm] = useState(10);
@@ -47,6 +49,23 @@ export default function SetupProfile() {
 
   const handleSubmit = async () => {
     try {
+      // Upload profile photo if selected
+      let photoUrl: string | undefined;
+      if (profilePhoto) {
+        const formData = new FormData();
+        formData.append('file', profilePhoto);
+        
+        const uploadResponse = await fetch('/api/upload-profile-photo', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (uploadResponse.ok) {
+          const { url } = await uploadResponse.json();
+          photoUrl = url;
+        }
+      }
+
       // Update user profile
       await updateUserMutation.mutateAsync({
         firstName,
@@ -214,6 +233,15 @@ export default function SetupProfile() {
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Tell us about yourself..."
                   rows={4}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Profile Photo</Label>
+                <ImageUpload
+                  onImageSelected={(file) => setProfilePhoto(file)}
+                  onImageRemoved={() => setProfilePhoto(null)}
+                  label="Add your photo"
                 />
               </div>
 

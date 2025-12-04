@@ -229,3 +229,14 @@
 - [x] Complete mobile app CreateSessionScreen implementation
 - [x] Complete mobile app NotificationsScreen implementation
 - [ ] Test all new pages
+
+
+## Photo Upload Implementation
+- [x] Add photo upload component to web SetupProfile page
+- [ ] Add photo upload to web Profile editing (TODO: create profile edit page)
+- [ ] Update profile photo display in Dashboard (TODO: add photo display)
+- [x] Install React Native Image Picker for mobile
+- [x] Add photo upload to mobile SetupProfileScreen
+- [ ] Add photo upload to mobile ProfileScreen (TODO: needs implementation)
+- [ ] Test photo upload on web
+- [ ] Test photo upload on mobile
