@@ -15,6 +15,13 @@
       "when": 1764821901626,
       "tag": "0001_easy_crystal",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1764863249608,
+      "tag": "0002_deep_sentinels",
+      "breakpoints": true
     }
   ]
 }

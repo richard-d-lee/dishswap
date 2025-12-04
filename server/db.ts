@@ -335,6 +335,10 @@ export async function createSession(data: InsertSession) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(sessions).values(data);
+  const insertId = Number(result[0]?.insertId || 0);
+  if (insertId) {
+    return await getSessionById(insertId);
+  }
   return result;
 }
 
@@ -374,6 +378,19 @@ export async function updateSession(id: number, data: Partial<InsertSession>) {
   if (!db) throw new Error("Database not available");
   await db.update(sessions).set(data).where(eq(sessions.id, id));
   return getSessionById(id);
+}
+
+export async function getUserSessions(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(sessions)
+    .where(
+      or(
+        eq(sessions.hostId, userId),
+        eq(sessions.dishwasherId, userId)
+      )
+    )
+    .orderBy(desc(sessions.scheduledDate));
 }
 
 // ============= Matches =============
@@ -542,4 +559,59 @@ export async function markMessageAsRead(messageId: number) {
   return db.update(messages)
     .set({ isRead: true })
     .where(eq(messages.id, messageId));
+}
+
+
+export async function getConversation(userId1: number, userId2: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select({
+    message: messages,
+    sender: users
+  }).from(messages)
+    .leftJoin(users, eq(messages.senderId, users.id))
+    .where(
+      or(
+        and(eq(messages.senderId, userId1), eq(messages.receiverId, userId2)),
+        and(eq(messages.senderId, userId2), eq(messages.receiverId, userId1))
+      )
+    )
+    .orderBy(asc(messages.createdAt));
+}
+
+export async function getUserConversations(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get all messages where user is sender or receiver
+  const allMessages = await db.select({
+    message: messages,
+    sender: users,
+  }).from(messages)
+    .leftJoin(users, eq(messages.senderId, users.id))
+    .where(
+      or(
+        eq(messages.senderId, userId),
+        eq(messages.receiverId, userId)
+      )
+    )
+    .orderBy(desc(messages.createdAt));
+  
+  // Group by conversation partner and get the most recent message
+  const conversationMap = new Map();
+  for (const row of allMessages) {
+    const msg = row.message;
+    const partnerId = msg.senderId === userId ? msg.receiverId : msg.senderId;
+    
+    if (!conversationMap.has(partnerId)) {
+      conversationMap.set(partnerId, {
+        partnerId,
+        lastMessage: msg,
+        sender: row.sender,
+      });
+    }
+  }
+  
+  return Array.from(conversationMap.values());
 }

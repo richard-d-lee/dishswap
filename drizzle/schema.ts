@@ -120,7 +120,7 @@ export const sessions = mysqlTable("sessions", {
   id: int("id").autoincrement().primaryKey(),
   hostId: int("hostId").notNull(),
   dishwasherId: int("dishwasherId"),
-  status: mysqlEnum("status", ["open", "matched", "in_progress", "completed", "cancelled"]).default("open").notNull(),
+  status: mysqlEnum("status", ["open", "matched", "confirmed", "in_progress", "completed", "cancelled"]).default("open").notNull(),
   scheduledDate: timestamp("scheduledDate").notNull(),
   estimatedDurationMinutes: int("estimatedDurationMinutes").default(60).notNull(),
   actualDurationMinutes: int("actualDurationMinutes"),
@@ -164,6 +164,7 @@ export const notifications = mysqlTable("notifications", {
   title: varchar("title", { length: 255 }).notNull(),
   message: text("message").notNull(),
   data: json("data"),
+  relatedId: int("relatedId"),
   isRead: boolean("isRead").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });

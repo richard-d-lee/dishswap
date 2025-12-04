@@ -27,7 +27,7 @@ export default function Dashboard() {
     enabled: !!user,
   });
   
-  const { data: notifications } = trpc.notifications.getMy.useQuery({ limit: 5 }, {
+  const { data: notifications } = trpc.notifications.getMyNotifications.useQuery(undefined, {
     enabled: !!user,
   });
 
@@ -258,7 +258,7 @@ export default function Dashboard() {
               <CardContent>
                 {notifications && notifications.length > 0 ? (
                   <div className="space-y-3">
-                    {notifications.map((notif) => (
+                    {notifications.map((notif: any) => (
                       <div key={notif.id} className={`p-3 rounded-lg border ${notif.isRead ? 'bg-muted/30' : 'bg-primary/5'}`}>
                         <p className="font-medium text-sm">{notif.title}</p>
                         <p className="text-xs text-muted-foreground mt-1">{notif.message}</p>

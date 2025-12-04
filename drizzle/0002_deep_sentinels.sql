@@ -1,0 +1,2 @@
+ALTER TABLE `sessions` MODIFY COLUMN `status` enum('open','matched','confirmed','in_progress','completed','cancelled') NOT NULL DEFAULT 'open';--> statement-breakpoint
+ALTER TABLE `notifications` ADD `relatedId` int;

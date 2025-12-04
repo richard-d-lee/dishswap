@@ -300,7 +300,7 @@ export const appRouter = router({
     update: protectedProcedure
       .input(z.object({
         id: z.number(),
-        status: z.enum(["open", "matched", "in_progress", "completed", "cancelled"]).optional(),
+        status: z.enum(["open", "matched", "confirmed", "in_progress", "completed", "cancelled"]).optional(),
         dishwasherId: z.number().optional(),
         actualDurationMinutes: z.number().optional(),
         completedAt: z.date().optional(),
@@ -316,6 +316,190 @@ export const appRouter = router({
         
         const { id, ...updateData } = input;
         return db.updateSession(id, updateData);
+      }),
+    
+    applyForSession: protectedProcedure
+      .input(z.object({
+        sessionId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const session = await db.getSessionById(input.sessionId);
+        
+        if (!session) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Session not found' });
+        }
+        
+        if (session.status !== 'open') {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Session is not open for applications' });
+        }
+        
+        if (session.hostId === ctx.user.id) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot apply to your own session' });
+        }
+        
+        // Update session to matched status and assign dishwasher
+        await db.updateSession(input.sessionId, {
+          dishwasherId: ctx.user.id,
+          status: 'matched',
+        });
+        
+        // Create notification for host
+        await db.createNotification({
+          userId: session.hostId,
+          title: 'New Application',
+          message: `${ctx.user.name || 'Someone'} applied for your dishwashing session`,
+          type: 'session_application',
+          relatedId: input.sessionId,
+        });
+        
+        return { success: true };
+      }),
+
+    confirmSession: protectedProcedure
+      .input(z.object({
+        sessionId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const session = await db.getSessionById(input.sessionId);
+        
+        if (!session) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Session not found' });
+        }
+        
+        if (session.hostId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Only host can confirm session' });
+        }
+        
+        if (session.status !== 'matched') {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Session must be in matched status' });
+        }
+        
+        await db.updateSession(input.sessionId, {
+          status: 'confirmed',
+        });
+        
+        // Notify dishwasher
+        if (session.dishwasherId) {
+          await db.createNotification({
+            userId: session.dishwasherId,
+            title: 'Session Confirmed',
+            message: 'Your dishwashing session has been confirmed!',
+            type: 'session_confirmed',
+            relatedId: input.sessionId,
+          });
+        }
+        
+        return { success: true };
+      }),
+
+    updateStatus: protectedProcedure
+      .input(z.object({
+        sessionId: z.number(),
+        status: z.enum(['in_progress', 'completed', 'cancelled']),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const session = await db.getSessionById(input.sessionId);
+        
+        if (!session) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Session not found' });
+        }
+        
+        // Verify user is host or dishwasher
+        if (session.hostId !== ctx.user.id && session.dishwasherId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized to update this session' });
+        }
+        
+        const updates: any = { status: input.status };
+        
+        if (input.status === 'completed') {
+          updates.completedAt = new Date();
+        }
+        
+        await db.updateSession(input.sessionId, updates);
+        
+        // Notify other party
+        const notifyUserId = session.hostId === ctx.user.id ? session.dishwasherId : session.hostId;
+        if (notifyUserId) {
+          await db.createNotification({
+            userId: notifyUserId,
+            title: 'Session Updated',
+            message: `Session status changed to ${input.status}`,
+            type: 'session_update',
+            relatedId: input.sessionId,
+          });
+        }
+        
+        return { success: true };
+      }),
+
+    getMySessions: protectedProcedure
+      .query(async ({ ctx }) => {
+        return db.getUserSessions(ctx.user.id);
+      }),
+    
+    findMatches: protectedProcedure
+      .input(z.object({
+        maxDistance: z.number().optional(),
+        minRating: z.number().min(1).max(5).optional(),
+        cuisineType: z.string().optional(),
+        dateFrom: z.date().optional(),
+        dateTo: z.date().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        // Get user's dishwasher profile for preferences
+        const dishwasherProfile = await db.getDishwasherProfileByUserId(ctx.user.id);
+        
+        if (!dishwasherProfile) {
+          throw new TRPCError({ 
+            code: 'BAD_REQUEST', 
+            message: 'Dishwasher profile required to find matches' 
+          });
+        }
+        
+        // Get all open sessions
+        let sessions = await db.getOpenSessions();
+        
+        // Filter by date range if provided
+        if (input.dateFrom || input.dateTo) {
+          sessions = sessions.filter(session => {
+            const sessionDate = new Date(session.scheduledDate);
+            if (input.dateFrom && sessionDate < input.dateFrom) return false;
+            if (input.dateTo && sessionDate > input.dateTo) return false;
+            return true;
+          });
+        }
+        
+        // Filter by cuisine type if provided
+        if (input.cuisineType) {
+          sessions = sessions.filter(session => 
+            session.mealDescription?.toLowerCase().includes(input.cuisineType!.toLowerCase())
+          );
+        }
+        
+        // TODO: Implement distance filtering using location data
+        // This requires geospatial queries with latitude/longitude
+        
+        // TODO: Filter by host rating if minRating provided
+        // This requires joining with host profiles and ratings
+        
+        return sessions;
+      }),
+  }),
+
+  notifications: router({    getMyNotifications: protectedProcedure
+      .query(async ({ ctx }) => {
+        return db.getUserNotifications(ctx.user.id);
+      }),
+    
+    markAsRead: protectedProcedure
+      .input(z.object({ notificationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        return db.markNotificationAsRead(input.notificationId);
+      }),
+    
+    markAllAsRead: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        return db.markAllNotificationsAsRead(ctx.user.id);
       }),
   }),
 
@@ -408,24 +592,6 @@ export const appRouter = router({
       }),
   }),
 
-  notifications: router({
-    getMy: protectedProcedure
-      .input(z.object({ limit: z.number().default(50) }))
-      .query(async ({ ctx, input }) => {
-        return db.getUserNotifications(ctx.user.id, input.limit);
-      }),
-    
-    markAsRead: protectedProcedure
-      .input(z.object({ notificationId: z.number() }))
-      .mutation(async ({ input }) => {
-        return db.markNotificationAsRead(input.notificationId);
-      }),
-    
-    markAllAsRead: protectedProcedure.mutation(async ({ ctx }) => {
-      return db.markAllNotificationsAsRead(ctx.user.id);
-    }),
-  }),
-
   messages: router({
     send: protectedProcedure
       .input(z.object({
@@ -461,6 +627,17 @@ export const appRouter = router({
       .input(z.object({ messageId: z.number() }))
       .mutation(async ({ input }) => {
         return db.markMessageAsRead(input.messageId);
+      }),
+    
+    getConversation: protectedProcedure
+      .input(z.object({ otherUserId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getConversation(ctx.user.id, input.otherUserId);
+      }),
+    
+    getConversations: protectedProcedure
+      .query(async ({ ctx }) => {
+        return db.getUserConversations(ctx.user.id);
       }),
   }),
 });
