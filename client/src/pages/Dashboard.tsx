@@ -92,6 +92,32 @@ export default function Dashboard() {
           </Card>
         )}
 
+        {/* Quick Actions */}
+        {hasProfiles && (
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            <Button asChild variant="outline" className="h-auto py-4">
+              <Link href="/browse">
+                <Calendar className="w-5 h-5 mr-2" />
+                Browse Sessions
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-auto py-4">
+              <Link href="/messages">
+                <MessageSquare className="w-5 h-5 mr-2" />
+                Messages
+              </Link>
+            </Button>
+            {(user.userType === 'host' || user.userType === 'both') && (
+              <Button asChild className="h-auto py-4">
+                <Link href="/create-session">
+                  <UtensilsCrossed className="w-5 h-5 mr-2" />
+                  Create Session
+                </Link>
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Quick Stats */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <Card>

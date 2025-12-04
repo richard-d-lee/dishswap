@@ -7,6 +7,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import SessionDetail from "./pages/SessionDetail";
 import Messages from "./pages/Messages";
+import RateUser from "./pages/RateUser";
+import CreateSession from "./pages/CreateSession";
 import Dashboard from "./pages/Dashboard";
 import SetupProfile from "./pages/SetupProfile";
 import BrowseSessions from "./pages/BrowseSessions";
@@ -20,6 +22,8 @@ function Router() {
       <Route path={"/browse"} component={BrowseSessions} />
       <Route path={"/sessions/:id"} component={SessionDetail} />
       <Route path={"/messages"} component={Messages} />
+      <Route path={"/rate/:userId/:sessionId"} component={RateUser} />
+      <Route path={"/create-session"} component={CreateSession} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

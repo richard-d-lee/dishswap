@@ -218,10 +218,14 @@
 - [x] Create SessionDetail page with apply button and status updates
 - [x] Create Messages page with conversation list
 - [x] Create ChatView component for individual conversations
-- [ ] Create RateUser page for submitting ratings after sessions
+- [x] Create RateUser page for submitting ratings after sessions
+- [ ] Create ViewRatings component to display user ratings on profiles
 - [ ] Create ViewRatings page to display user ratings
-- [ ] Create CreateSession page for hosts
+- [x] Create CreateSession page for hosts with date picker and form validation
 - [ ] Create ManageSessions page for hosts to view and manage their sessions
-- [ ] Update Dashboard with links to new pages
+- [x] Update Dashboard with links to new pages
 - [x] Update App.tsx with new routes
+- [x] Complete mobile app SetupProfileScreen implementation
+- [x] Complete mobile app CreateSessionScreen implementation
+- [x] Complete mobile app NotificationsScreen implementation
 - [ ] Test all new pages
