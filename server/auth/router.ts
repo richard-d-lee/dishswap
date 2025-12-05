@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { OAuth2Client } from 'google-auth-library';
 import passport from './passport';
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken, generateRandomToken, isValidEmail, isValidPassword, getTokenExpiration, verifyToken } from "./utils";
 import { createUser, updateUser, createEmailVerification, getEmailVerification, deleteEmailVerification, createPasswordReset, getPasswordReset, markPasswordResetAsUsed, createRefreshToken, getRefreshToken, deleteRefreshToken, deleteUserRefreshTokens, recordLoginAttempt, getRecentFailedAttempts } from "./db";
@@ -546,5 +547,162 @@ router.get('/facebook/callback',
     }
   }
 );
+
+// Mobile OAuth endpoints
+router.post('/google/mobile', async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({ error: 'ID token is required' });
+    }
+
+    // Verify Google ID token
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    // Check if user exists
+    let user = await getUserByEmail(payload.email);
+    
+    if (!user) {
+      // Create new user
+      const newUser = await createUser({
+        email: payload.email,
+        firstName: payload.given_name || null,
+        lastName: payload.family_name || null,
+        name: payload.name || null,
+        profilePhotoUrl: payload.picture || null,
+        emailVerified: true, // Google emails are already verified
+        isActive: true,
+      });
+      user = newUser;
+    }
+
+    // Generate JWT tokens
+    const accessToken = generateAccessToken({ 
+      userId: user.id, 
+      email: user.email,
+      role: user.role 
+    });
+    const refreshToken = generateRefreshToken({ 
+      userId: user.id,
+      email: user.email,
+      role: user.role 
+    });
+
+    // Store refresh token
+    await createRefreshToken({
+      userId: user.id,
+      token: refreshToken,
+      expiresAt: getTokenExpiration(7 * 24 * 60), // 7 days
+    });
+
+    res.json({
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        name: user.name,
+        profilePhotoUrl: user.profilePhotoUrl,
+        emailVerified: user.emailVerified,
+        role: user.role,
+      },
+    });
+  } catch (error: any) {
+    console.error('Google mobile auth error:', error);
+    res.status(500).json({ error: 'Authentication failed', details: error.message });
+  }
+});
+
+router.post('/facebook/mobile', async (req, res) => {
+  try {
+    const { accessToken } = req.body;
+
+    if (!accessToken) {
+      return res.status(400).json({ error: 'Access token is required' });
+    }
+
+    // Verify Facebook access token by fetching user data
+    const response = await fetch(
+      `https://graph.facebook.com/me?fields=id,email,first_name,last_name,name,picture&access_token=${accessToken}`
+    );
+
+    if (!response.ok) {
+      return res.status(401).json({ error: 'Invalid Facebook token' });
+    }
+
+    const fbUser: any = await response.json();
+
+    if (!fbUser.email) {
+      return res.status(400).json({ error: 'Email permission required from Facebook' });
+    }
+
+    // Check if user exists
+    let user = await getUserByEmail(fbUser.email);
+    
+    if (!user) {
+      // Create new user
+      const newUser = await createUser({
+        email: fbUser.email,
+        firstName: fbUser.first_name || null,
+        lastName: fbUser.last_name || null,
+        name: fbUser.name || null,
+        profilePhotoUrl: fbUser.picture?.data?.url || null,
+        emailVerified: true, // Facebook emails are already verified
+        isActive: true,
+      });
+      user = newUser;
+    }
+
+    // Generate JWT tokens
+    const jwtAccessToken = generateAccessToken({ 
+      userId: user.id, 
+      email: user.email,
+      role: user.role 
+    });
+    const refreshToken = generateRefreshToken({ 
+      userId: user.id,
+      email: user.email,
+      role: user.role 
+    });
+
+    // Store refresh token
+    await createRefreshToken({
+      userId: user.id,
+      token: refreshToken,
+      expiresAt: getTokenExpiration(7 * 24 * 60), // 7 days
+    });
+
+    res.json({
+      accessToken: jwtAccessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        name: user.name,
+        profilePhotoUrl: user.profilePhotoUrl,
+        emailVerified: user.emailVerified,
+        role: user.role,
+      },
+    });
+  } catch (error: any) {
+    console.error('Facebook mobile auth error:', error);
+    res.status(500).json({ error: 'Authentication failed', details: error.message });
+  }
+});
 
 export default router;

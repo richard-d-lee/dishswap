@@ -384,3 +384,12 @@
 - [ ] Handle OAuth tokens and store in AsyncStorage
 - [ ] Test mobile OAuth flow
 - [ ] Create mobile OAuth setup documentation
+
+
+## Mobile OAuth Backend Endpoints
+- [x] Add /api/auth/google/mobile endpoint for Google ID token verification
+- [x] Add /api/auth/facebook/mobile endpoint for Facebook access token verification
+- [x] Install google-auth-library for Google token verification
+- [x] Test mobile OAuth endpoints
+- [x] Create OAuth credentials setup documentation
+- [x] Create email service configuration documentation
