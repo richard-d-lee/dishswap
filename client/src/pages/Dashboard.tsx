@@ -208,7 +208,7 @@ export default function Dashboard() {
                                 </p>
                               </div>
                               <Button asChild variant="outline" size="sm">
-                                <Link href={`/session/${session.id}`}>View</Link>
+                                <Link href={`/sessions/${session.id}`}>View</Link>
                               </Button>
                             </div>
                           ))}
@@ -242,7 +242,7 @@ export default function Dashboard() {
                                 </p>
                               </div>
                               <Button asChild variant="outline" size="sm">
-                                <Link href={`/session/${session.id}`}>View</Link>
+                                <Link href={`/sessions/${session.id}`}>View</Link>
                               </Button>
                             </div>
                           ))}
@@ -263,7 +263,7 @@ export default function Dashboard() {
                   </CardHeader>
                   <CardContent>
                     <Button asChild className="w-full">
-                      <Link href="/browse-sessions">Browse All Sessions</Link>
+                      <Link href="/browse">Browse All Sessions</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -321,7 +321,7 @@ export default function Dashboard() {
                   </Button>
                 )}
                 <Button asChild variant="outline" className="w-full justify-start">
-                  <Link href="/browse-sessions">
+                  <Link href="/browse">
                     <UtensilsCrossed className="w-4 h-4 mr-2" />
                     Browse Sessions
                   </Link>

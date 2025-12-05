@@ -18,6 +18,9 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "@/pages/VerifyEmail";
 import AuthCallback from "@/pages/AuthCallback";
+import Settings from "@/pages/Settings";
+import Notifications from "@/pages/Notifications";
+import Profile from "@/pages/Profile";
 
 function Router() {
   return (
@@ -36,6 +39,9 @@ function Router() {
       <Route path={"/messages"} component={Messages} />
       <Route path={"/rate/:userId/:sessionId"} component={RateUser} />
       <Route path={"/create-session"} component={CreateSession} />
+      <Route path={"/settings"} component={Settings} />
+      <Route path={"/notifications"} component={Notifications} />
+      <Route path={"/profile"} component={Profile} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
