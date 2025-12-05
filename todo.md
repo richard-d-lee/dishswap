@@ -319,3 +319,16 @@
 - [ ] Create OAuth setup guide
 - [ ] Create email service configuration guide
 - [ ] Document environment variables needed
+
+
+## Mobile App Authentication Implementation
+- [x] Install @react-native-async-storage/async-storage
+- [x] Create LoginScreen for React Native
+- [x] Create RegisterScreen for React Native
+- [x] Create ForgotPasswordScreen for React Native
+- [x] Update AuthContext to use AsyncStorage for token storage
+- [x] Configure tRPC client to include Authorization header with JWT
+- [x] Update navigation to handle authenticated/unauthenticated states
+- [ ] Test login flow on mobile
+- [ ] Test registration flow on mobile
+- [ ] Test token persistence across app restarts
