@@ -21,6 +21,28 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    
+    // Log to monitoring service in production
+    if (import.meta.env.PROD) {
+      this.logErrorToService(error, errorInfo);
+    }
+  }
+
+  private logErrorToService(error: Error, errorInfo: any) {
+    // Placeholder for error logging service integration
+    const errorData = {
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+    };
+    console.log("Error logged:", errorData);
+  }
+
   render() {
     if (this.state.hasError) {
       return (
