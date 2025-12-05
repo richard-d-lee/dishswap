@@ -32,8 +32,8 @@ export async function getDb() {
 // ============= User Management =============
 
 export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
+  if (!user.email) {
+    throw new Error("User email is required for upsert");
   }
 
   const db = await getDb();
@@ -44,11 +44,11 @@ export async function upsertUser(user: InsertUser): Promise<void> {
 
   try {
     const values: InsertUser = {
-      openId: user.openId,
+      email: user.email,
     };
     const updateSet: Record<string, unknown> = {};
 
-    const textFields = ["name", "email", "loginMethod", "firstName", "lastName", "phone", "profilePhotoUrl", "bio"] as const;
+    const textFields = ["name", "firstName", "lastName", "phone", "profilePhotoUrl", "bio"] as const;
     type TextField = (typeof textFields)[number];
 
     const assignNullable = (field: TextField) => {
@@ -68,9 +68,6 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     if (user.role !== undefined) {
       values.role = user.role;
       updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
-      updateSet.role = 'admin';
     }
     if (user.userType !== undefined) {
       values.userType = user.userType;
@@ -80,9 +77,9 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.dateOfBirth = user.dateOfBirth;
       updateSet.dateOfBirth = user.dateOfBirth;
     }
-    if (user.isVerified !== undefined) {
-      values.isVerified = user.isVerified;
-      updateSet.isVerified = user.isVerified;
+    if (user.emailVerified !== undefined) {
+      values.emailVerified = user.emailVerified;
+      updateSet.emailVerified = user.emailVerified;
     }
     if (user.isActive !== undefined) {
       values.isActive = user.isActive;
@@ -106,14 +103,14 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 }
 
-export async function getUserByOpenId(openId: string) {
+export async function getUserByEmail(email: string) {
   const db = await getDb();
   if (!db) {
     console.warn("[Database] Cannot get user: database not available");
     return undefined;
   }
 
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 

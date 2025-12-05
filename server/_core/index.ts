@@ -7,6 +7,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import uploadRouter from "../upload";
+import authRouter from "../auth/router";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -34,8 +35,11 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  // OAuth callback under /api/oauth/callback
-  registerOAuthRoutes(app);
+  // Custom authentication routes
+  app.use("/api/auth", authRouter);
+  
+  // OAuth callback under /api/oauth/callback (legacy - can be removed)
+  // registerOAuthRoutes(app);
   
   // File upload routes
   app.use("/api", uploadRouter);

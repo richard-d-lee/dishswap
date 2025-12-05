@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE users DROP COLUMN IF EXISTS openId; ALTER TABLE users DROP COLUMN IF EXISTS loginMethod; ALTER TABLE users DROP COLUMN IF EXISTS isVerified;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 28VbPbWPgVFnsui.893ced79e235 --database apAtvbQN3gFH7JspzZgHv7 --execute ALTER TABLE users DROP COLUMN IF EXISTS openId; ALTER TABLE users DROP COLUMN IF EXISTS loginMethod; ALTER TABLE users DROP COLUMN IF EXISTS isVerified;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2644
+}

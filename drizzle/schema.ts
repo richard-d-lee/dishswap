@@ -6,10 +6,9 @@ import { relations } from "drizzle-orm";
  */
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  passwordHash: varchar("passwordHash", { length: 255 }), // Null for OAuth-only users
   name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   
   // Profile extensions
@@ -20,12 +19,14 @@ export const users = mysqlTable("users", {
   profilePhotoUrl: varchar("profilePhotoUrl", { length: 500 }),
   bio: text("bio"),
   dateOfBirth: timestamp("dateOfBirth"),
-  isVerified: boolean("isVerified").default(false).notNull(),
+  emailVerified: boolean("emailVerified").default(false).notNull(),
   isActive: boolean("isActive").default(true).notNull(),
+  failedLoginAttempts: int("failedLoginAttempts").default(0).notNull(),
+  lockedUntil: timestamp("lockedUntil"),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+  lastSignedIn: timestamp("lastSignedIn"),
 });
 
 export const dishwasherProfiles = mysqlTable("dishwasherProfiles", {
@@ -179,6 +180,52 @@ export const messages = mysqlTable("messages", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+// Authentication tables
+export const oauthAccounts = mysqlTable("oauthAccounts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  provider: varchar("provider", { length: 50 }).notNull(), // google, facebook, github
+  providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
+  accessToken: text("accessToken"),
+  refreshToken: text("refreshToken"),
+  expiresAt: timestamp("expiresAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const emailVerifications = mysqlTable("emailVerifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  token: varchar("token", { length: 255 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const passwordResets = mysqlTable("passwordResets", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  token: varchar("token", { length: 255 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  used: boolean("used").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const refreshTokens = mysqlTable("refreshTokens", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  token: varchar("token", { length: 500 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const loginAttempts = mysqlTable("loginAttempts", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull(),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  successful: boolean("successful").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
@@ -208,3 +255,13 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = typeof messages.$inferInsert;
+export type OAuthAccount = typeof oauthAccounts.$inferSelect;
+export type InsertOAuthAccount = typeof oauthAccounts.$inferInsert;
+export type EmailVerification = typeof emailVerifications.$inferSelect;
+export type InsertEmailVerification = typeof emailVerifications.$inferInsert;
+export type PasswordReset = typeof passwordResets.$inferSelect;
+export type InsertPasswordReset = typeof passwordResets.$inferInsert;
+export type RefreshToken = typeof refreshTokens.$inferSelect;
+export type InsertRefreshToken = typeof refreshTokens.$inferInsert;
+export type LoginAttempt = typeof loginAttempts.$inferSelect;
+export type InsertLoginAttempt = typeof loginAttempts.$inferInsert;

@@ -12,11 +12,21 @@ import CreateSession from "./pages/CreateSession";
 import Dashboard from "./pages/Dashboard";
 import SetupProfile from "./pages/SetupProfile";
 import BrowseSessions from "./pages/BrowseSessions";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 
 function Router() {
   return (
     <Switch>
-       <Route path={"/"} component={Home} />
+      <Route path={"/"} component={Home} />
+      <Route path={"/login"} component={Login} />
+      <Route path={"/register"} component={Register} />
+      <Route path={"/forgot-password"} component={ForgotPassword} />
+      <Route path={"/reset-password"} component={ResetPassword} />
+      <Route path={"/verify-email"} component={VerifyEmail} />
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/setup-profile"} component={SetupProfile} />
       <Route path={"/browse"} component={BrowseSessions} />

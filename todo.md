@@ -240,3 +240,82 @@
 - [ ] Add photo upload to mobile ProfileScreen (TODO: needs implementation)
 - [ ] Test photo upload on web
 - [ ] Test photo upload on mobile
+
+
+## Custom Authentication System Implementation
+
+### Database Schema
+- [x] Add password field to users table (hashed with bcrypt)
+- [x] Create email_verifications table for verification tokens
+- [x] Create password_resets table for reset tokens
+- [x] Create oauth_accounts table for social login linking
+- [x] Create sessions table for session management (using refreshTokens)
+- [x] Create login_attempts table for rate limiting
+- [x] Push database schema changes
+
+### Backend - Email/Password Auth
+- [x] Install dependencies (bcrypt, jsonwebtoken, nodemailer, passport)
+- [x] Create password hashing utilities
+- [x] Implement JWT token generation and verification
+- [x] Create register endpoint with email validation
+- [x] Create login endpoint with password verification
+- [x] Create logout endpoint
+- [x] Create refresh token endpoint
+- [x] Add password strength validation
+
+### Backend - Email Verification
+- [ ] Create email verification token generation
+- [ ] Implement email sending service with nodemailer
+- [ ] Create verify-email endpoint
+- [ ] Create resend-verification endpoint
+- [ ] Add email templates for verification
+
+### Backend - Password Reset
+- [ ] Create password reset token generation
+- [ ] Implement forgot-password endpoint
+- [ ] Implement reset-password endpoint
+- [ ] Add email templates for password reset
+- [ ] Add token expiration (15 minutes)
+
+### Backend - Social OAuth
+- [ ] Configure Passport.js with Google strategy
+- [ ] Configure Passport.js with Facebook strategy
+- [ ] Configure Passport.js with GitHub strategy
+- [ ] Create OAuth callback handlers
+- [ ] Implement account linking (connect social to existing account)
+- [ ] Extract profile data from OAuth providers
+
+### Backend - Security
+- [ ] Implement rate limiting middleware
+- [ ] Add CSRF protection
+- [ ] Create account lockout after failed attempts
+- [ ] Add session management endpoints
+- [ ] Implement refresh token rotation
+- [ ] Add security headers middleware
+
+### Web UI - Authentication
+- [ ] Create Login page
+- [ ] Create Register page
+- [ ] Create Forgot Password page
+- [ ] Create Reset Password page
+- [ ] Create Email Verification page
+- [ ] Add social login buttons
+- [ ] Update navigation for auth state
+- [ ] Add protected route wrapper
+
+### Mobile - Authentication
+- [ ] Create Login screen
+- [ ] Create Register screen
+- [ ] Create Forgot Password screen
+- [ ] Implement secure token storage
+- [ ] Add social OAuth for mobile
+- [ ] Update navigation for auth state
+
+### Testing & Documentation
+- [ ] Write unit tests for auth endpoints
+- [ ] Test email/password flow
+- [ ] Test social OAuth flows
+- [ ] Test password reset flow
+- [ ] Create OAuth setup guide
+- [ ] Create email service configuration guide
+- [ ] Document environment variables needed

@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE users ADD COLUMN IF NOT EXISTS passwordHash VARCHAR(255) NULL, ADD COLUMN IF NOT EXISTS emailVerified BOOLEAN NOT NULL DEFAULT FALSE, ADD COLUMN IF NOT EXISTS failedLoginAttempts INT NOT NULL DEFAULT 0, ADD COLUMN IF NOT EXISTS lockedUntil TIMESTAMP NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 28VbPbWPgVFnsui.893ced79e235 --database apAtvbQN3gFH7JspzZgHv7 --execute ALTER TABLE users ADD COLUMN IF NOT EXISTS passwordHash VARCHAR(255) NULL, ADD COLUMN IF NOT EXISTS emailVerified BOOLEAN NOT NULL DEFAULT FALSE, ADD COLUMN IF NOT EXISTS failedLoginAttempts INT NOT NULL DEFAULT 0, ADD COLUMN IF NOT EXISTS lockedUntil TIMESTAMP NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1234
+}
