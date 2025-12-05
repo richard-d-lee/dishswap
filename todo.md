@@ -355,10 +355,10 @@
 - [ ] Install expo-auth-session and expo-web-browser
 - [ ] Configure Google OAuth for React Native
 - [ ] Configure Facebook OAuth for React Native
-- [ ] Add Google Sign-In button to mobile LoginScreen
-- [ ] Add Facebook Login button to mobile LoginScreen
-- [ ] Add Google Sign-In button to mobile RegisterScreen
-- [ ] Add Facebook Login button to mobile RegisterScreen
+- [x] Add Google Sign-In button to mobile LoginScreen
+- [x] Add Facebook Login button to mobile LoginScreen
+- [x] Add Google Sign-In button to mobile RegisterScreen
+- [x] Add Facebook Login button to mobile RegisterScreen
 - [ ] Handle OAuth callback in mobile app
 - [ ] Test Google login flow on mobile
 - [ ] Test Facebook login flow on mobile
@@ -368,3 +368,19 @@
 - [ ] Document how to obtain Facebook App credentials
 - [ ] Document environment variables needed for OAuth
 - [ ] Create setup guide for OAuth configuration
+
+
+## Mobile OAuth Implementation (React Native)
+- [x] Install @react-native-google-signin/google-signin
+- [x] Install react-native-fbsdk-next
+- [x] Configure app.json with OAuth URL schemes
+- [x] Configure deep linking for OAuth callbacks
+- [x] Implement Google Sign-In helper functions
+- [x] Implement Facebook Login helper functions
+- [x] Add Google Sign-In button to mobile LoginScreen
+- [x] Add Facebook Login button to mobile LoginScreen
+- [x] Add Google Sign-In button to mobile RegisterScreen
+- [x] Add Facebook Login button to mobile RegisterScreen
+- [ ] Handle OAuth tokens and store in AsyncStorage
+- [ ] Test mobile OAuth flow
+- [ ] Create mobile OAuth setup documentation
