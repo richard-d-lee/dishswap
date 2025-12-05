@@ -393,3 +393,13 @@
 - [x] Test mobile OAuth endpoints
 - [x] Create OAuth credentials setup documentation
 - [x] Create email service configuration documentation
+
+## Mobile App Build and Testing
+- [x] Review mobile app configuration files
+- [x] Update mobile app to call new OAuth endpoints (already implemented)
+- [x] Configure EAS Build for development builds
+- [x] Create iOS development build instructions
+- [x] Create Android development build instructions
+- [x] Create mobile testing guide
+- [x] Document OAuth testing on physical devices
+- [x] Create troubleshooting guide for common build issues
