@@ -1,4 +1,5 @@
 import { Router } from "express";
+import passport from './passport';
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken, generateRandomToken, isValidEmail, isValidPassword, getTokenExpiration, verifyToken } from "./utils";
 import { createUser, updateUser, createEmailVerification, getEmailVerification, deleteEmailVerification, createPasswordReset, getPasswordReset, markPasswordResetAsUsed, createRefreshToken, getRefreshToken, deleteRefreshToken, deleteUserRefreshTokens, recordLoginAttempt, getRecentFailedAttempts } from "./db";
 import { getUserByEmail } from "../db";
@@ -453,5 +454,97 @@ router.get("/me", async (req, res) => {
     res.status(500).json({ error: "Failed to get user info" });
   }
 });
+
+// Google OAuth routes
+router.get('/google', passport.authenticate('google', {
+  scope: ['profile', 'email'],
+  session: false,
+}));
+
+router.get('/google/callback', 
+  passport.authenticate('google', { session: false, failureRedirect: '/login?error=oauth_failed' }),
+  async (req, res) => {
+    try {
+      const user = req.user as any;
+      
+      if (!user) {
+        return res.redirect('/login?error=no_user');
+      }
+
+      // Generate tokens
+      const accessToken = generateAccessToken({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      const refreshToken = generateRefreshToken({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      // Store refresh token
+      await createRefreshToken({
+        userId: user.id,
+        token: refreshToken,
+        expiresAt: getTokenExpiration(7 * 24 * 60), // 7 days
+      });
+
+      // Redirect to frontend with tokens
+      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      console.error('[Auth] Google OAuth callback error:', error);
+      res.redirect('/login?error=oauth_error');
+    }
+  }
+);
+
+// Facebook OAuth routes
+router.get('/facebook', passport.authenticate('facebook', {
+  scope: ['email', 'public_profile'],
+  session: false,
+}));
+
+router.get('/facebook/callback',
+  passport.authenticate('facebook', { session: false, failureRedirect: '/login?error=oauth_failed' }),
+  async (req, res) => {
+    try {
+      const user = req.user as any;
+      
+      if (!user) {
+        return res.redirect('/login?error=no_user');
+      }
+
+      // Generate tokens
+      const accessToken = generateAccessToken({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      const refreshToken = generateRefreshToken({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      // Store refresh token
+      await createRefreshToken({
+        userId: user.id,
+        token: refreshToken,
+        expiresAt: getTokenExpiration(7 * 24 * 60), // 7 days
+      });
+
+      // Redirect to frontend with tokens
+      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      console.error('[Auth] Facebook OAuth callback error:', error);
+      res.redirect('/login?error=oauth_error');
+    }
+  }
+);
 
 export default router;

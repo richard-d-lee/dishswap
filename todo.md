@@ -280,9 +280,7 @@
 ### Backend - Social OAuth
 - [ ] Configure Passport.js with Google strategy
 - [ ] Configure Passport.js with Facebook strategy
-- [ ] Configure Passport.js with GitHub strategy
-- [ ] Create OAuth callback handlers
-- [ ] Implement account linking (connect social to existing account)
+- [ ] Configure Passport.js with GitHub strategy- [x] Create OAuth callback handler page[ ] Implement account linking (connect social to existing account)
 - [ ] Extract profile data from OAuth providers
 
 ### Backend - Security
@@ -332,3 +330,41 @@
 - [ ] Test login flow on mobile
 - [ ] Test registration flow on mobile
 - [ ] Test token persistence across app restarts
+
+
+## OAuth Integration (Google & Facebook)
+### Backend
+- [x] Install passport, passport-google-oauth20, passport-facebook dependencies
+- [x] Create OAuth configuration file with strategies
+- [x] Implement Google OAuth callback endpoint
+- [x] Implement Facebook OAuth callback endpoint
+- [x] Link OAuth accounts to existing users or create new users
+- [x] Store OAuth provider info in oauth_accounts table
+- [x] Add OAuth routes to Express server
+
+### Web Application
+- [x] Add Google Sign-In button to Login page
+- [x] Add Facebook Login button to Login page
+- [x] Add Google Sign-In button to Register page
+- [x] Add Facebook Login button to Register page
+- [x] Handle OAuth callback and token storage
+- [ ] Test Google login flow on web
+- [ ] Test Facebook login flow on web
+
+### Mobile Application
+- [ ] Install expo-auth-session and expo-web-browser
+- [ ] Configure Google OAuth for React Native
+- [ ] Configure Facebook OAuth for React Native
+- [ ] Add Google Sign-In button to mobile LoginScreen
+- [ ] Add Facebook Login button to mobile LoginScreen
+- [ ] Add Google Sign-In button to mobile RegisterScreen
+- [ ] Add Facebook Login button to mobile RegisterScreen
+- [ ] Handle OAuth callback in mobile app
+- [ ] Test Google login flow on mobile
+- [ ] Test Facebook login flow on mobile
+
+### Documentation
+- [ ] Document how to obtain Google OAuth credentials
+- [ ] Document how to obtain Facebook App credentials
+- [ ] Document environment variables needed for OAuth
+- [ ] Create setup guide for OAuth configuration

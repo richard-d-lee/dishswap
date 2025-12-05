@@ -16,7 +16,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import VerifyEmail from "./pages/VerifyEmail";
+import VerifyEmail from "@/pages/VerifyEmail";
+import AuthCallback from "@/pages/AuthCallback";
 
 function Router() {
   return (
@@ -26,7 +27,8 @@ function Router() {
       <Route path={"/register"} component={Register} />
       <Route path={"/forgot-password"} component={ForgotPassword} />
       <Route path={"/reset-password"} component={ResetPassword} />
-      <Route path={"/verify-email"} component={VerifyEmail} />
+       <Route path="/verify-email" component={VerifyEmail} />
+      <Route path="/auth/callback" component={AuthCallback} />
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/setup-profile"} component={SetupProfile} />
       <Route path={"/browse"} component={BrowseSessions} />
