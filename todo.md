@@ -425,3 +425,20 @@
 - [ ] Verify all database queries are optimized
 - [x] Add missing error boundaries
 - [x] Verify all user feedback (toasts, alerts) are implemented
+
+## Remove All Manus Dependencies
+
+- [x] Remove Manus OAuth integration (already using custom auth)
+- [x] Replace with standard Passport.js OAuth (already implemented)
+- [x] Remove Manus analytics
+- [x] Remove all Manus API references
+- [x] Remove Manus branding from UI
+- [x] Replace Manus LLM with OpenAI SDK
+- [x] Replace Manus Storage with AWS S3 SDK
+- [x] Replace Manus Maps with direct Google Maps API
+- [x] Replace Manus Notifications with Nodemailer
+- [x] Remove Manus Data API
+- [x] Update environment variables documentation
+- [x] Update README to remove Manus references
+- [ ] Test with standard providers
+- [ ] Verify app works completely standalone

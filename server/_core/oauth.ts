@@ -1,6 +1,6 @@
-// Manus OAuth removed - using custom authentication
+// Using custom authentication with Passport.js
 import type { Express } from "express";
 
 export function registerOAuthRoutes(app: Express) {
-  // No-op: Manus OAuth has been replaced with custom authentication
+  // No-op: Using custom authentication
 }
