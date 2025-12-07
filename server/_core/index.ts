@@ -10,6 +10,7 @@ import uploadRouter from "../upload";
 import authRouter from "../auth/router";
 import passport from '../auth/passport';
 import { serveStatic, setupVite } from "./vite";
+import { apiLimiter } from "./rateLimiter";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -33,11 +34,17 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  
+  // Trust proxy for rate limiting behind reverse proxies
+  app.set('trust proxy', 1);
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // Initialize Passport
   app.use(passport.initialize());
+  
+  // Apply rate limiting to all API routes
+  app.use("/api", apiLimiter);
   
   // Custom authentication routes
   app.use("/api/auth", authRouter);

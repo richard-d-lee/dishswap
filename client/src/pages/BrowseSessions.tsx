@@ -5,19 +5,77 @@ import { trpc } from "@/lib/trpc";
 import { Calendar, MapPin, UtensilsCrossed, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useMemo } from "react";
+import { Search } from "lucide-react";
 
 export default function BrowseSessions() {
   const { data: sessions, isLoading } = trpc.sessions.getOpen.useQuery();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"date" | "duration" | "dishes">("date");
+  
+  // Filter and sort sessions
+  const filteredSessions = useMemo(() => {
+    if (!sessions) return [];
+    
+    let filtered = sessions.filter(session => {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        session.mealDescription?.toLowerCase().includes(searchLower) ||
+        session.specialInstructions?.toLowerCase().includes(searchLower)
+      );
+    });
+    
+    // Sort sessions
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "date":
+          return new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime();
+        case "duration":
+          return a.estimatedDurationMinutes - b.estimatedDurationMinutes;
+        case "dishes":
+          return (a.dishCount || 0) - (b.dishCount || 0);
+        default:
+          return 0;
+      }
+    });
+    
+    return filtered;
+  }, [sessions, searchQuery, sortBy]);
 
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="bg-card border-b">
-        <div className="container py-8">
-          <h1 className="text-3xl font-bold mb-2">Browse Available Sessions</h1>
-          <p className="text-muted-foreground">
-            Find dishwashing opportunities near you and earn free meals!
-          </p>
+      <div className="container py-8">
+        <h1 className="text-3xl font-bold mb-2">Browse Available Sessions</h1>
+        <p className="text-muted-foreground mb-6">
+          Find dishwashing opportunities near you and earn free meals!
+        </p>
+        
+        {/* Search and Filter */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by meal description or instructions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date">Date (earliest)</SelectItem>
+              <SelectItem value="duration">Duration (shortest)</SelectItem>
+              <SelectItem value="dishes">Dish count (fewest)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+      </div>
       </div>
 
       <div className="container py-8">
@@ -35,9 +93,9 @@ export default function BrowseSessions() {
               </Card>
             ))}
           </div>
-        ) : sessions && sessions.length > 0 ? (
+        ) : filteredSessions && filteredSessions.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sessions.map((session) => (
+            {filteredSessions.map((session) => (
               <Card key={session.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">

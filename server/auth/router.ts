@@ -5,6 +5,7 @@ import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken
 import { createUser, updateUser, createEmailVerification, getEmailVerification, deleteEmailVerification, createPasswordReset, getPasswordReset, markPasswordResetAsUsed, createRefreshToken, getRefreshToken, deleteRefreshToken, deleteUserRefreshTokens, recordLoginAttempt, getRecentFailedAttempts } from "./db";
 import { getUserByEmail } from "../db";
 import { sendVerificationEmail, sendPasswordResetEmail } from "./email";
+import { authLimiter, passwordResetLimiter, emailVerificationLimiter } from "../_core/rateLimiter";
 
 const router = Router();
 
@@ -15,7 +16,7 @@ const LOCKOUT_DURATION_MINUTES = 30;
  * POST /api/auth/register
  * Register a new user with email and password
  */
-router.post("/register", async (req, res) => {
+router.post("/register", authLimiter, async (req, res) => {
   try {
     const { email, password, name, firstName, lastName } = req.body;
 
@@ -107,7 +108,7 @@ router.post("/register", async (req, res) => {
  * POST /api/auth/login
  * Login with email and password
  */
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     const ipAddress = req.ip || req.socket.remoteAddress;
