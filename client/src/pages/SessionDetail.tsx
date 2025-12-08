@@ -9,6 +9,7 @@ import { Calendar, Clock, MapPin, ChefHat, AlertCircle, User, CheckCircle } from
 import { useLocation, useRoute } from "wouter";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { UserLink } from "@/components/UserLink";
 
 export default function SessionDetail() {
   const [, params] = useRoute("/sessions/:id");
@@ -149,7 +150,7 @@ export default function SessionDetail() {
               <div>
                 <CardTitle className="text-3xl mb-2">Dishwashing Session</CardTitle>
                 <CardDescription className="text-base">
-                  Hosted by {isHost ? "You" : "Host"}
+                  Hosted by {isHost ? "You" : <UserLink userId={session.hostId} name="Host" />}
                 </CardDescription>
               </div>
               <Badge className={getStatusColor(session.status)}>

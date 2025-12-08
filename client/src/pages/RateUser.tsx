@@ -9,6 +9,7 @@ import { Star } from "lucide-react";
 import { useLocation, useRoute } from "wouter";
 import { toast } from "sonner";
 import { useState } from "react";
+import { UserLink } from "@/components/UserLink";
 
 export default function RateUser() {
   const [, params] = useRoute("/rate/:userId/:sessionId");
@@ -82,7 +83,7 @@ export default function RateUser() {
           <CardHeader>
             <CardTitle>Rate Your Experience</CardTitle>
             <CardDescription>
-              Share your feedback to help build trust in the community
+              Rate <UserLink userId={ratedUserId} name="this user" /> • Share your feedback to help build trust in the community
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -449,3 +449,12 @@
 - [x] Add reviews and ratings section
 - [x] Make profile shareable with unique URL (/user/:id)
 - [x] Test profile page functionality
+
+## Profile Linking
+- [x] Add profile links to SessionDetail page (host and dishwasher names)
+- [ ] Add profile links to BrowseSessions page (host names - not displayed currently)
+- [x] Add profile links to Messages/Conversations (sender names)
+- [x] Add profile links to Reviews/Ratings (reviewer names - in UserProfile page)
+- [ ] Add profile links to Dashboard (session participants - not displayed currently)
+- [x] Create reusable UserLink component
+- [x] Test all profile navigation flows (24 tests passing)

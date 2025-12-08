@@ -11,6 +11,7 @@ import { Send, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { format } from "date-fns";
+import { UserLink } from "@/components/UserLink";
 
 export default function Messages() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -147,7 +148,11 @@ export default function Messages() {
                         {selectedConversationData?.sender?.name?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    {selectedConversationData?.sender?.name || "User"}
+                    <UserLink 
+                      userId={selectedConversation} 
+                      name={selectedConversationData?.sender?.name || "User"}
+                      className="text-xl"
+                    />
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
