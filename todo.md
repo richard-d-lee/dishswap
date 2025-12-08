@@ -479,3 +479,17 @@
 - [x] Update profile gallery to show session photos
 - [x] Add image optimization and validation (5MB limit, image type validation)
 - [x] Test photo upload functionality (all 24 tests passing)
+
+## Photo Moderation System
+- [x] Add photoFlags table to database schema
+- [x] Add moderation status fields to sessionPhotos table
+- [x] Create backend procedure to flag photos
+- [x] Create backend procedure to get flagged photos (admin)
+- [x] Create backend procedure to moderate photos (approve/reject)
+- [x] Add flag photo button to photo gallery
+- [x] Create flag photo dialog with reason selection
+- [x] Build admin moderation dashboard page
+- [x] Add photo review interface for admins
+- [x] Test flagging workflow (all 24 tests passing)
+- [x] Test admin moderation workflow (all 24 tests passing)
+- [ ] Add email notifications for moderation actions

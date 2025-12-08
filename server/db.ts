@@ -9,6 +9,7 @@ import {
   profilePhotos, InsertProfilePhoto,
   sessions, InsertSession, Session,
   sessionPhotos,
+  photoFlags,
   ratings, InsertRating,
   matches, InsertMatch,
   notifications, InsertNotification,
@@ -399,8 +400,93 @@ export async function getUserSessionPhotos(userId: number) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(sessionPhotos)
-    .where(eq(sessionPhotos.userId, userId))
+    .where(and(
+      eq(sessionPhotos.userId, userId),
+      eq(sessionPhotos.isHidden, false)
+    ))
     .orderBy(desc(sessionPhotos.uploadedAt));
+}
+
+// ============= Photo Moderation =============
+
+export async function flagPhoto(data: { photoId: number; reporterId: number; reason: string; description?: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Check if user already flagged this photo
+  const existing = await db.select().from(photoFlags)
+    .where(and(
+      eq(photoFlags.photoId, data.photoId),
+      eq(photoFlags.reporterId, data.reporterId)
+    ))
+    .limit(1);
+  
+  if (existing.length > 0) {
+    throw new Error("You have already flagged this photo");
+  }
+  
+  // Create flag
+  await db.insert(photoFlags).values(data);
+  
+  // Increment flag count on photo
+  await db.update(sessionPhotos)
+    .set({ flagCount: sql`${sessionPhotos.flagCount} + 1` })
+    .where(eq(sessionPhotos.id, data.photoId));
+  
+  // Auto-hide if flagged 3+ times
+  const photo = await db.select().from(sessionPhotos)
+    .where(eq(sessionPhotos.id, data.photoId))
+    .limit(1);
+  
+  if (photo[0] && photo[0].flagCount >= 3) {
+    await db.update(sessionPhotos)
+      .set({ isHidden: true, moderationStatus: "under_review" })
+      .where(eq(sessionPhotos.id, data.photoId));
+  }
+  
+  return { success: true };
+}
+
+export async function getFlaggedPhotos() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select({
+    flag: photoFlags,
+    photo: sessionPhotos,
+    reporter: users,
+  })
+  .from(photoFlags)
+  .innerJoin(sessionPhotos, eq(photoFlags.photoId, sessionPhotos.id))
+  .innerJoin(users, eq(photoFlags.reporterId, users.id))
+  .where(eq(photoFlags.status, "pending"))
+  .orderBy(desc(photoFlags.createdAt));
+}
+
+export async function moderatePhoto(photoId: number, action: "approve" | "reject", moderatorId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  if (action === "approve") {
+    await db.update(sessionPhotos)
+      .set({ isHidden: false, moderationStatus: "approved", flagCount: 0 })
+      .where(eq(sessionPhotos.id, photoId));
+  } else {
+    await db.update(sessionPhotos)
+      .set({ isHidden: true, moderationStatus: "rejected" })
+      .where(eq(sessionPhotos.id, photoId));
+  }
+  
+  // Update all flags for this photo
+  await db.update(photoFlags)
+    .set({ 
+      status: action === "approve" ? "dismissed" : "confirmed",
+      reviewedBy: moderatorId,
+      reviewedAt: sql`NOW()`
+    })
+    .where(eq(photoFlags.photoId, photoId));
+  
+  return { success: true };
 }
 
 export async function getUserSessions(userId: number) {

@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS photoFlags (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  photoId INT NOT NULL,\n  reporterId INT NOT NULL,\n  reason VARCHAR(50) NOT NULL,\n  description TEXT,\n  status VARCHAR(20) DEFAULT 'pending' NOT NULL,\n  reviewedBy INT,\n  reviewedAt TIMESTAMP NULL,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  INDEX idx_photo (photoId),\n  INDEX idx_status (status)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 28VbPbWPgVFnsui.893ced79e235 --database apAtvbQN3gFH7JspzZgHv7 --execute CREATE TABLE IF NOT EXISTS photoFlags (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  photoId INT NOT NULL,\n  reporterId INT NOT NULL,\n  reason VARCHAR(50) NOT NULL,\n  description TEXT,\n  status VARCHAR(20) DEFAULT 'pending' NOT NULL,\n  reviewedBy INT,\n  reviewedAt TIMESTAMP NULL,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  INDEX idx_photo (photoId),\n  INDEX idx_status (status)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1572
+}

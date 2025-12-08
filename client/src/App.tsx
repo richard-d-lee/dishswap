@@ -23,6 +23,7 @@ import Settings from "@/pages/Settings";
 import Notifications from "@/pages/Notifications";
 import Profile from "@/pages/Profile";
 import UserProfile from "@/pages/UserProfile";
+import AdminModeration from "@/pages/AdminModeration";
 
 function Router() {
   return (
@@ -44,7 +45,8 @@ function Router() {
       <Route path={"/settings"} component={Settings} />
       <Route path={"/notifications"} component={Notifications} />
       <Route path="/profile" component={Profile} />
-      <Route path="/user/:id" component={UserProfile} />
+          <Route path="/user/:id" component={UserProfile} />
+          <Route path="/admin/moderation" component={AdminModeration} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

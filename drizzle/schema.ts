@@ -134,13 +134,28 @@ export const sessions = mysqlTable("sessions", {
 });
 
 export const sessionPhotos = mysqlTable("sessionPhotos", {
-  id: int("id").autoincrement().primaryKey(),
+  id: int("id").primaryKey().autoincrement(),
   sessionId: int("sessionId").notNull(),
-  userId: int("userId").notNull(), // Who uploaded the photo
+  userId: int("userId").notNull(),
   photoUrl: varchar("photoUrl", { length: 500 }).notNull(),
   caption: text("caption"),
   displayOrder: int("displayOrder").default(0).notNull(),
+  moderationStatus: varchar("moderationStatus", { length: 20 }).default("approved").notNull(),
+  flagCount: int("flagCount").default(0).notNull(),
+  isHidden: boolean("isHidden").default(false).notNull(),
   uploadedAt: timestamp("uploadedAt").defaultNow().notNull(),
+});
+
+export const photoFlags = mysqlTable("photoFlags", {
+  id: int("id").autoincrement().primaryKey(),
+  photoId: int("photoId").notNull(),
+  reporterId: int("reporterId").notNull(),
+  reason: varchar("reason", { length: 50 }).notNull(),
+  description: text("description"),
+  status: varchar("status", { length: 20 }).default("pending").notNull(),
+  reviewedBy: int("reviewedBy"),
+  reviewedAt: timestamp("reviewedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 export const ratings = mysqlTable("ratings", {

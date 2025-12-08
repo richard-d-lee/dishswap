@@ -5,12 +5,36 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { BadgeList } from "@/components/Badge";
-import { Star, MapPin, Calendar, Award, Users, ChefHat, Sparkles, Image as ImageIcon } from "lucide-react";
+import { FlagPhotoDialog } from "@/components/FlagPhotoDialog";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Star, MapPin, Calendar, Award, Users, ChefHat, Sparkles, Image as ImageIcon, Flag } from "lucide-react";
 import { format } from "date-fns";
 
 export default function UserProfile() {
   const params = useParams();
+  const [flagDialogOpen, setFlagDialogOpen] = useState(false);
+  const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
   const userId = params.id ? parseInt(params.id) : 0;
+
+  const flagPhotoMutation = trpc.sessions.flagPhoto.useMutation({
+    onSuccess: () => {
+      toast.success("Photo reported successfully. Our team will review it.");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to report photo");
+    },
+  });
+
+  const handleFlagPhoto = async (reason: string, description?: string) => {
+    if (!selectedPhotoId) return;
+    await flagPhotoMutation.mutateAsync({
+      photoId: selectedPhotoId,
+      reason: reason as any,
+      description,
+    });
+  };
 
   const { data: profile, isLoading } = trpc.profiles.getPublicProfile.useQuery(
     { userId },
@@ -212,6 +236,17 @@ export default function UserProfile() {
                         alt={photo.caption || "Meal photo"}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 hover:bg-black/70 text-white"
+                        onClick={() => {
+                          setSelectedPhotoId(photo.id);
+                          setFlagDialogOpen(true);
+                        }}
+                      >
+                        <Flag className="h-4 w-4" />
+                      </Button>
                       {photo.caption && (
                         <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity">
                           {photo.caption}
@@ -332,6 +367,12 @@ export default function UserProfile() {
           </div>
         </div>
       </div>
+
+      <FlagPhotoDialog
+        open={flagDialogOpen}
+        onOpenChange={setFlagDialogOpen}
+        onSubmit={handleFlagPhoto}
+      />
     </div>
   );
 }

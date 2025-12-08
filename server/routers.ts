@@ -302,6 +302,21 @@ export const appRouter = router({
         return db.getSessionPhotos(input.sessionId);
       }),
 
+    flagPhoto: protectedProcedure
+      .input(z.object({
+        photoId: z.number(),
+        reason: z.enum(["inappropriate", "spam", "violence", "copyright", "other"]),
+        description: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return db.flagPhoto({
+          photoId: input.photoId,
+          reporterId: ctx.user.id,
+          reason: input.reason,
+          description: input.description,
+        });
+      }),
+
     create: protectedProcedure
       .input(z.object({
         scheduledDate: z.date(),
@@ -791,6 +806,30 @@ export const appRouter = router({
     getConversations: protectedProcedure
       .query(async ({ ctx }) => {
         return db.getUserConversations(ctx.user.id);
+      }),
+  }),
+
+  admin: router({
+    getFlaggedPhotos: protectedProcedure
+      .query(async ({ ctx }) => {
+        // Check if user is admin
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return db.getFlaggedPhotos();
+      }),
+
+    moderatePhoto: protectedProcedure
+      .input(z.object({
+        photoId: z.number(),
+        action: z.enum(["approve", "reject"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if user is admin
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return db.moderatePhoto(input.photoId, input.action, ctx.user.id);
       }),
   }),
 });
