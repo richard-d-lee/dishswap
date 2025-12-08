@@ -7,6 +7,7 @@ import { storagePut } from "./storage";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { filterByDistance } from "./geolocation";
+import { calculateUserBadges } from "./badges";
 
 // Helper to generate random suffix for file keys
 function randomSuffix() {
@@ -615,6 +616,23 @@ export const appRouter = router({
           ? ratings.reduce((sum: number, r) => sum + r.rating.rating, 0) / ratings.length
           : 0;
         
+        // Calculate account age in days
+        const accountAge = Math.floor(
+          (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+        );
+        
+        // Calculate badges
+        const badges = calculateUserBadges({
+          totalHostSessions: hostSessions.length,
+          totalDishwasherSessions: dishwasherSessions.length,
+          completedHostSessions: hostSessions.filter(s => s.status === 'completed').length,
+          completedDishwasherSessions: dishwasherSessions.filter(s => s.status === 'completed').length,
+          totalRatings: ratings.length,
+          averageRating: avgRating,
+          isEmailVerified: user.emailVerified,
+          accountAge,
+        });
+        
         return {
           user: {
             id: user.id,
@@ -635,6 +653,7 @@ export const appRouter = router({
             totalRatings: ratings.length,
             averageRating: avgRating,
           },
+          badges,
           recentSessions: hostSessions
             .filter(s => s.status === 'completed')
             .sort((a, b) => new Date(b.completedAt || b.scheduledDate).getTime() - new Date(a.completedAt || a.scheduledDate).getTime())

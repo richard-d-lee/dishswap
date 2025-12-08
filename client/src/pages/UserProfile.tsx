@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { BadgeList } from "@/components/Badge";
 import { Star, MapPin, Calendar, Award, Users, ChefHat, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 
@@ -37,7 +38,7 @@ export default function UserProfile() {
     );
   }
 
-  const { user, hostProfile, dishwasherProfile, statistics, recentSessions, reviews } = profile;
+  const { user, hostProfile, dishwasherProfile, statistics, recentSessions, reviews, badges } = profile;
   const initials = user.firstName && user.lastName
     ? `${user.firstName[0]}${user.lastName[0]}`
     : user.name?.[0] || "U";
@@ -85,6 +86,13 @@ export default function UserProfile() {
                   </>
                 )}
               </div>
+
+              {/* Achievement Badges */}
+              {badges && badges.length > 0 && (
+                <div className="mb-3">
+                  <BadgeList badges={badges} size="md" showLabels={false} maxDisplay={8} />
+                </div>
+              )}
 
               {user.bio && (
                 <p className="text-muted-foreground max-w-2xl">{user.bio}</p>

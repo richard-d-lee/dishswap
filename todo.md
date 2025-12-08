@@ -458,3 +458,14 @@
 - [ ] Add profile links to Dashboard (session participants - not displayed currently)
 - [x] Create reusable UserLink component
 - [x] Test all profile navigation flows (24 tests passing)
+
+## Badge System & Gamification
+- [x] Design badge criteria (Top Host, Verified, 100+ Sessions, etc.)
+- [x] Add backend function to calculate user badges
+- [x] Create Badge component with icons and tooltips
+- [x] Add badges to UserProfile page
+- [ ] Add badges to UserLink component (optional mini badges)
+- [x] Add verification badge system
+- [x] Add achievement milestones (10, 50, 100 sessions)
+- [x] Add rating-based badges (5-star host, excellent dishwasher)
+- [x] Test badge display and logic (24 tests passing)
