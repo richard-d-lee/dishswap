@@ -438,3 +438,14 @@
 - [x] Update README to remove Manus references
 - [x] Test with standard providers (all 24 tests passing)
 - [x] Verify app works completely standalone
+
+## User Profile Showcase
+- [x] Add backend procedures to get user's offered dishes/sessions
+- [x] Add backend procedures to get reviews received by user
+- [x] Create public user profile page component
+- [x] Add photo gallery for user's dish photos (placeholder ready)
+- [x] Display user statistics (total sessions, ratings, etc.)
+- [x] Show user's food specialties and preferences
+- [x] Add reviews and ratings section
+- [x] Make profile shareable with unique URL (/user/:id)
+- [x] Test profile page functionality

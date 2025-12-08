@@ -592,6 +592,71 @@ export const appRouter = router({
       }),
   }),
 
+  profiles: router({
+    getPublicProfile: publicProcedure
+      .input(z.object({ userId: z.number() }))
+      .query(async ({ input }) => {
+        const user = await db.getUserById(input.userId);
+        if (!user) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+        }
+        
+        // Get profile based on user type
+        const hostProfile = await db.getHostProfileByUserId(input.userId);
+        const dishwasherProfile = await db.getDishwasherProfileByUserId(input.userId);
+        
+        // Get statistics
+        const hostSessions = await db.getSessionsByHostId(input.userId);
+        const dishwasherSessions = await db.getSessionsByDishwasherId(input.userId);
+        const ratings = await db.getRatingsByUserId(input.userId);
+        
+        // Calculate average rating
+        const avgRating = ratings.length > 0
+          ? ratings.reduce((sum: number, r) => sum + r.rating.rating, 0) / ratings.length
+          : 0;
+        
+        return {
+          user: {
+            id: user.id,
+            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            userType: user.userType,
+            bio: user.bio,
+            createdAt: user.createdAt,
+          },
+          hostProfile,
+          dishwasherProfile,
+          statistics: {
+            totalHostSessions: hostSessions.length,
+            totalDishwasherSessions: dishwasherSessions.length,
+            completedHostSessions: hostSessions.filter(s => s.status === 'completed').length,
+            completedDishwasherSessions: dishwasherSessions.filter(s => s.status === 'completed').length,
+            totalRatings: ratings.length,
+            averageRating: avgRating,
+          },
+          recentSessions: hostSessions
+            .filter(s => s.status === 'completed')
+            .sort((a, b) => new Date(b.completedAt || b.scheduledDate).getTime() - new Date(a.completedAt || a.scheduledDate).getTime())
+            .slice(0, 6),
+          reviews: ratings.slice(0, 10),
+        };
+      }),
+    
+    getProfilePhotos: publicProcedure
+      .input(z.object({ userId: z.number() }))
+      .query(async ({ input }) => {
+        // Get photos from completed sessions
+        const sessions = await db.getSessionsByHostId(input.userId);
+        const photos: string[] = [];
+        
+        // Photos will come from session photos when that feature is added
+        // For now return empty array
+        
+        return photos.slice(0, 20); // Return up to 20 photos
+      }),
+  }),
+  
   ratings: router({
     create: protectedProcedure
       .input(z.object({

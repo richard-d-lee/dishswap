@@ -22,6 +22,7 @@ import AuthCallback from "@/pages/AuthCallback";
 import Settings from "@/pages/Settings";
 import Notifications from "@/pages/Notifications";
 import Profile from "@/pages/Profile";
+import UserProfile from "@/pages/UserProfile";
 
 function Router() {
   return (
@@ -42,7 +43,8 @@ function Router() {
       <Route path={"/create-session"} component={CreateSession} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/notifications"} component={Notifications} />
-      <Route path={"/profile"} component={Profile} />
+      <Route path="/profile" component={Profile} />
+      <Route path="/user/:id" component={UserProfile} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
