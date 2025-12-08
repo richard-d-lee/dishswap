@@ -469,3 +469,13 @@
 - [x] Add achievement milestones (10, 50, 100 sessions)
 - [x] Add rating-based badges (5-star host, excellent dishwasher)
 - [x] Test badge display and logic (24 tests passing)
+
+## Session Photo Upload
+- [x] Add sessionPhotos table to database schema
+- [x] Add backend procedure to upload session photos
+- [x] Add backend procedure to get session photos
+- [x] Create photo upload component for sessions
+- [x] Add photo upload to SessionDetail page
+- [x] Update profile gallery to show session photos
+- [x] Add image optimization and validation (5MB limit, image type validation)
+- [x] Test photo upload functionality (all 24 tests passing)

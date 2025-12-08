@@ -10,6 +10,7 @@ import { useLocation, useRoute } from "wouter";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { UserLink } from "@/components/UserLink";
+import { PhotoUpload } from "@/components/PhotoUpload";
 
 export default function SessionDetail() {
   const [, params] = useRoute("/sessions/:id");
@@ -53,6 +54,16 @@ export default function SessionDetail() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to confirm session");
+    },
+  });
+
+  const uploadPhotoMutation = trpc.sessions.uploadPhoto.useMutation({
+    onSuccess: () => {
+      toast.success("Photo uploaded successfully!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to upload photo");
     },
   });
 
@@ -309,6 +320,29 @@ export default function SessionDetail() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Photo Upload Section - Only for completed sessions */}
+        {session.status === "completed" && canUpdateStatus && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Session Photos</CardTitle>
+              <CardDescription>
+                Share photos of your meal to showcase on your profile
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PhotoUpload
+                onUpload={async (photoData, caption) => {
+                  await uploadPhotoMutation.mutateAsync({
+                    sessionId: session.id,
+                    photoData,
+                    caption,
+                  });
+                }}
+              />
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

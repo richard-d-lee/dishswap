@@ -266,6 +266,42 @@ export const appRouter = router({
   }),
 
   sessions: router({
+    uploadPhoto: protectedProcedure
+      .input(z.object({
+        sessionId: z.number(),
+        photoData: z.string(), // base64 encoded
+        caption: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify user is host or dishwasher of this session
+        const session = await db.getSessionById(input.sessionId);
+        if (!session) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Session not found' });
+        }
+        if (session.hostId !== ctx.user.id && session.dishwasherId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized to upload photos for this session' });
+        }
+
+        const buffer = Buffer.from(input.photoData, 'base64');
+        const fileKey = `sessions/${input.sessionId}/photos/${randomSuffix()}.jpg`;
+        const { url } = await storagePut(fileKey, buffer, "image/jpeg");
+
+        await db.createSessionPhoto({
+          sessionId: input.sessionId,
+          userId: ctx.user.id,
+          photoUrl: url,
+          caption: input.caption,
+        });
+
+        return { success: true, photoUrl: url };
+      }),
+
+    getPhotos: publicProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getSessionPhotos(input.sessionId);
+      }),
+
     create: protectedProcedure
       .input(z.object({
         scheduledDate: z.date(),
@@ -659,6 +695,7 @@ export const appRouter = router({
             .sort((a, b) => new Date(b.completedAt || b.scheduledDate).getTime() - new Date(a.completedAt || a.scheduledDate).getTime())
             .slice(0, 6),
           reviews: ratings.slice(0, 10),
+          sessionPhotos: await db.getUserSessionPhotos(input.userId),
         };
       }),
     

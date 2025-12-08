@@ -8,6 +8,7 @@ import {
   foodSpecialties, hostFoodSpecialties, dishwasherFoodPreferences,
   profilePhotos, InsertProfilePhoto,
   sessions, InsertSession, Session,
+  sessionPhotos,
   ratings, InsertRating,
   matches, InsertMatch,
   notifications, InsertNotification,
@@ -375,6 +376,31 @@ export async function updateSession(id: number, data: Partial<InsertSession>) {
   if (!db) throw new Error("Database not available");
   await db.update(sessions).set(data).where(eq(sessions.id, id));
   return getSessionById(id);
+}
+
+// ============= Session Photos =============
+
+export async function createSessionPhoto(data: { sessionId: number; userId: number; photoUrl: string; caption?: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(sessionPhotos).values(data);
+  return { id: Number(result[0]?.insertId || 0) };
+}
+
+export async function getSessionPhotos(sessionId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(sessionPhotos)
+    .where(eq(sessionPhotos.sessionId, sessionId))
+    .orderBy(asc(sessionPhotos.displayOrder), desc(sessionPhotos.uploadedAt));
+}
+
+export async function getUserSessionPhotos(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(sessionPhotos)
+    .where(eq(sessionPhotos.userId, userId))
+    .orderBy(desc(sessionPhotos.uploadedAt));
 }
 
 export async function getUserSessions(userId: number) {

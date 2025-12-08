@@ -133,6 +133,16 @@ export const sessions = mysqlTable("sessions", {
   completedAt: timestamp("completedAt"),
 });
 
+export const sessionPhotos = mysqlTable("sessionPhotos", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionId: int("sessionId").notNull(),
+  userId: int("userId").notNull(), // Who uploaded the photo
+  photoUrl: varchar("photoUrl", { length: 500 }).notNull(),
+  caption: text("caption"),
+  displayOrder: int("displayOrder").default(0).notNull(),
+  uploadedAt: timestamp("uploadedAt").defaultNow().notNull(),
+});
+
 export const ratings = mysqlTable("ratings", {
   id: int("id").autoincrement().primaryKey(),
   sessionId: int("sessionId").notNull(),

@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { BadgeList } from "@/components/Badge";
-import { Star, MapPin, Calendar, Award, Users, ChefHat, Sparkles } from "lucide-react";
+import { Star, MapPin, Calendar, Award, Users, ChefHat, Sparkles, Image as ImageIcon } from "lucide-react";
 import { format } from "date-fns";
 
 export default function UserProfile() {
@@ -38,7 +38,7 @@ export default function UserProfile() {
     );
   }
 
-  const { user, hostProfile, dishwasherProfile, statistics, recentSessions, reviews, badges } = profile;
+  const { user, hostProfile, dishwasherProfile, statistics, recentSessions, reviews, badges, sessionPhotos } = profile;
   const initials = user.firstName && user.lastName
     ? `${user.firstName[0]}${user.lastName[0]}`
     : user.name?.[0] || "U";
@@ -192,6 +192,32 @@ export default function UserProfile() {
                         </p>
                       )}
                     </Card>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* Photo Gallery */}
+            {sessionPhotos && sessionPhotos.length > 0 && (
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <ImageIcon className="h-5 w-5" />
+                  Meal Gallery ({sessionPhotos.length})
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {sessionPhotos.map((photo) => (
+                    <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-lg">
+                      <img
+                        src={photo.photoUrl}
+                        alt={photo.caption || "Meal photo"}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      />
+                      {photo.caption && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                          {photo.caption}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               </Card>
