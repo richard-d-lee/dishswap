@@ -46,7 +46,18 @@ class Logger {
     switch (level) {
       case "error":
         console.error(formattedLog);
-        // TODO: Send to error tracking service (Sentry, etc.)
+        // Send to Sentry
+        if (error) {
+          try {
+            const { Sentry } = require('./sentry');
+            Sentry.captureException(error, {
+              level: 'error',
+              extra: { context, message }
+            });
+          } catch (e) {
+            // Sentry not configured or import failed
+          }
+        }
         break;
       case "warn":
         console.warn(formattedLog);

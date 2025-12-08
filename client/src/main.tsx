@@ -1,4 +1,8 @@
+import { initSentry } from "./lib/sentry";
 import { trpc } from "@/lib/trpc";
+
+// Initialize Sentry as early as possible
+initSentry();
 import { UNAUTHED_ERR_MSG } from '@shared/const';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";

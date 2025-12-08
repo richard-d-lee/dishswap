@@ -1,5 +1,9 @@
 import "dotenv/config";
+import { initSentry, Sentry } from "./sentry";
 import express from "express";
+
+// Initialize Sentry as early as possible
+initSentry();
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -63,6 +67,12 @@ async function startServer() {
       createContext,
     })
   );
+  
+  // Sentry error handler (custom implementation since Handlers is deprecated)
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    Sentry.captureException(err);
+    next(err);
+  });
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

@@ -31,16 +31,20 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   private logErrorToService(error: Error, errorInfo: any) {
-    // Placeholder for error logging service integration
-    const errorData = {
-      message: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-      url: window.location.href,
-    };
-    console.log("Error logged:", errorData);
+    try {
+      // Send to Sentry
+      import('@/lib/sentry').then(({ Sentry }) => {
+        Sentry.captureException(error, {
+          contexts: {
+            react: {
+              componentStack: errorInfo.componentStack,
+            },
+          },
+        });
+      });
+    } catch (e) {
+      console.error("Failed to log error to Sentry:", e);
+    }
   }
 
   render() {
