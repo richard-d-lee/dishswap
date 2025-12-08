@@ -25,7 +25,7 @@
 - [x] Implement matching algorithm and procedures
 - [x] Implement rating and review procedures
 - [x] Implement notification procedures
-- [ ] Implement geolocation search procedures
+- [x] Implement geolocation search procedures
 - [x] Add unit tests for critical procedures (24 tests passing)
 
 ## Web Application - Core Features
@@ -45,7 +45,7 @@
 - [x] Implement notification center
 - [x] Create user dashboard showing active/past sessions
 - [x] Implement search and filter functionality
-- [ ] Add map view for nearby opportunities
+- [x] Add map view for nearby opportunities (searchByLocation procedure)
 - [x] Create messaging interface
 
 ## Web Application - UI/UX Polish
@@ -54,35 +54,31 @@
 - [x] Add responsive design for mobile web
 - [x] Implement accessibility features
 - [x] Add empty states for lists and galleries
-- [ ] Create onboarding tour for new users
+- [x] Create onboarding tour for new users
 
 ## Mobile Application - Setup
-- [ ] Initialize React Native project with Expo
-- [ ] Set up navigation structure
-- [ ] Configure environment variables
-- [ ] Set up tRPC client for mobile
-- [ ] Implement OAuth authentication flow
-- [ ] Configure push notifications
-
-## Mobile Application - Features
-- [ ] Create mobile landing/login screen
-- [ ] Implement user profile screens
-- [ ] Create dishwasher profile management
-- [ ] Create host profile management
-- [ ] Implement photo upload from camera/gallery
-- [ ] Create session browsing interface
-- [ ] Implement session posting interface
-- [ ] Create matching recommendations view
-- [ ] Implement rating and review screens
-- [ ] Create notification handling
-- [ ] Implement map view with location services
-- [ ] Add messaging interface (optional)
-- [ ] Implement session history view
-
-## Mobile Application - Native Features
-- [ ] Integrate camera for profile photos
-- [ ] Implement geolocation services
-- [ ] Configure push notifications
+- [x] Initialize React Native project with Expo
+- [x] Set up navigation structure
+- [x] Configure environment variables
+- [x] Set up tRPC client for mobile
+- [x] Implement OAuth authentication flow
+- [x] Configure push notifications## Mobile Application - Core Screens
+- [x] Create mobile landing/login screen
+- [x] Implement user profile screens
+- [x] Create dishwasher profile management
+- [x] Create host profile management
+- [x] Implement photo upload from camera/gallery
+- [x] Create session browsing interface
+- [x] Implement session posting interface
+- [x] Create matching recommendations view
+- [x] Implement rating and review screens
+- [x] Create notification handling
+- [x] Implement map view with location services
+- [x] Add messaging interface
+- [x] Implement session history view## Mobile Application - Native Features
+- [x] Integrate camera for profile photos
+- [x] Implement geolocation services
+- [x] Configure push notifications
 - [ ] Add biometric authentication (optional)
 - [ ] Implement offline support (optional)
 

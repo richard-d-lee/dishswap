@@ -11,6 +11,7 @@ import authRouter from "../auth/router";
 import passport from '../auth/passport';
 import { serveStatic, setupVite } from "./vite";
 import { apiLimiter } from "./rateLimiter";
+import { initializeSocket } from "./socket";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -79,6 +80,9 @@ async function startServer() {
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
   });
+  
+  // Initialize Socket.IO
+  initializeSocket(server);
 }
 
 startServer().catch(console.error);

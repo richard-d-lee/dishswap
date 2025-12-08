@@ -6,6 +6,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
+import { filterByDistance } from "./geolocation";
 
 // Helper to generate random suffix for file keys
 function randomSuffix() {
@@ -296,6 +297,37 @@ export const appRouter = router({
     getOpen: publicProcedure.query(async () => {
       return db.getOpenSessions();
     }),
+    
+    searchByLocation: publicProcedure
+      .input(z.object({
+        latitude: z.number(),
+        longitude: z.number(),
+        radiusKm: z.number().default(25),
+      }))
+      .query(async ({ input }) => {
+        const sessions = await db.getOpenSessions();
+        
+        // Get host profiles with location data
+        const sessionsWithLocation = await Promise.all(
+          sessions.map(async (session) => {
+            const hostProfile = await db.getHostProfileByUserId(session.hostId);
+            return {
+              ...session,
+              latitude: hostProfile?.latitude ? parseFloat(hostProfile.latitude) : null,
+              longitude: hostProfile?.longitude ? parseFloat(hostProfile.longitude) : null,
+            };
+          })
+        );
+        
+        // Filter sessions by distance
+        const sessionsWithDistance = filterByDistance(
+          sessionsWithLocation,
+          { latitude: input.latitude, longitude: input.longitude },
+          input.radiusKm
+        );
+        
+        return sessionsWithDistance;
+      }),
     
     update: protectedProcedure
       .input(z.object({
