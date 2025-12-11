@@ -101,8 +101,8 @@ export default function Home() {
               <h2 className="text-3xl font-bold">For Dishwashers</h2>
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <UtensilsCrossed className="w-5 h-5 text-primary" />
+                  <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <UtensilsCrossed className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Free Delicious Meals</h3>
@@ -110,8 +110,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-primary" />
+                  <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Set Your Range</h3>
@@ -119,8 +119,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Shield className="w-5 h-5 text-primary" />
+                  <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Shield className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Manage Allergies</h3>
@@ -134,8 +134,8 @@ export default function Home() {
               <h2 className="text-3xl font-bold">For Hosts</h2>
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Users className="w-5 h-5 text-secondary" />
+                  <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Users className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Clean Kitchen</h3>
@@ -143,8 +143,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Star className="w-5 h-5 text-secondary" />
+                  <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Star className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Share Your Cooking</h3>
@@ -152,8 +152,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-5 h-5 text-secondary" />
+                  <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Flexible Scheduling</h3>
