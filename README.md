@@ -1,188 +1,287 @@
 # DishSwap
 
-A platform connecting home cooks with dishwashers for meal cleanup services. Built with React, tRPC, and Express.
+A marketplace platform connecting dishwashers with hosts who provide free meals in exchange for dishwashing services.
 
 ## Features
 
-- **User Authentication** - Email/password and social login (Google, Facebook)
-- **Session Management** - Create, browse, and apply for dishwashing sessions
-- **Real-time Messaging** - Chat between hosts and dishwashers
-- **Rating System** - Rate and review completed sessions
-- **Photo Upload** - Share photos of meals and completed work
-- **Profile Management** - Separate profiles for hosts and dishwashers
+- **Custom Authentication**: Email/password registration and login with JWT tokens
+- **Social OAuth**: Sign in with Google or Facebook
+- **User Profiles**: Separate profiles for hosts and dishwashers with photos, ratings, and badges
+- **Session Management**: Create, browse, and apply for dishwashing sessions
+- **Real-time Messaging**: Socket.IO-powered chat between hosts and dishwashers
+- **Photo Uploads**: AWS S3 integration for profile and session photos
+- **Ratings & Reviews**: Bidirectional rating system with detailed reviews
+- **Gamification**: Achievement badges (Top Host, Pro Dishwasher, Century Club, etc.)
+- **Admin Moderation**: Flag and moderate inappropriate photos
+- **Geolocation Search**: Find sessions near you with distance filtering
+- **Email Notifications**: Account verification and password reset emails
 
 ## Tech Stack
 
-### Frontend
-- React 19 with TypeScript
-- Tailwind CSS 4
-- tRPC for type-safe API calls
-- Wouter for routing
-- shadcn/ui components
+**Frontend:**
+- React 19 + TypeScript
+- Vite
+- TailwindCSS 4
+- tRPC client
+- Socket.IO client
+- Sentry (error tracking)
 
-### Backend
-- Express 4
-- tRPC 11 for API layer
-- Drizzle ORM
-- MySQL/TiDB database
+**Backend:**
+- Node.js + Express
+- tRPC 11 (type-safe API)
+- MySQL with Drizzle ORM
+- Socket.IO (real-time features)
 - JWT authentication
+- Passport.js (OAuth)
+- Bcrypt (password hashing)
+- Nodemailer (email sending)
 
-### Services
-- AWS S3 for file storage
-- OpenAI API for LLM features
-- Google Maps API for location services
-- Nodemailer for email notifications
+**External Services:**
+- AWS S3 (photo storage)
+- Google OAuth & Maps API
+- Facebook OAuth
+- OpenAI API (optional)
+- Sentry (error tracking)
 
-## Getting Started
+## Prerequisites
 
-### Prerequisites
+- Node.js 22.x or later
+- pnpm 10.x or later
+- MySQL 8.0+ (or PlanetScale account)
+- AWS account (for S3)
+- Gmail account (for SMTP) or SendGrid account
 
-- Node.js 22+
-- pnpm
-- MySQL or TiDB database
-- AWS S3 bucket
-- Google OAuth credentials (optional)
-- Facebook OAuth credentials (optional)
+## Quick Start
 
-### Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-# Database
-DATABASE_URL=mysql://user:password@host:port/database
-
-# JWT Secret
-JWT_SECRET=your-secret-key-here
-
-# OAuth (Optional)
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-FACEBOOK_APP_ID=your-facebook-app-id
-FACEBOOK_APP_SECRET=your-facebook-app-secret
-
-# AWS S3 Storage
-AWS_S3_BUCKET=your-bucket-name
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-
-# OpenAI (Optional)
-OPENAI_API_KEY=your-openai-api-key
-
-# Google Maps (Optional)
-GOOGLE_MAPS_API_KEY=your-google-maps-api-key
-
-# Email Notifications (Optional)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-SMTP_FROM=DishSwap <noreply@dishswap.com>
-OWNER_EMAIL=admin@dishswap.com
-```
-
-### Installation
+### 1. Clone the Repository
 
 ```bash
-# Install dependencies
+git clone https://github.com/richard-d-lee/dishswap.git
+cd dishswap
+```
+
+### 2. Install Dependencies
+
+```bash
 pnpm install
+```
 
-# Push database schema
+**Windows users:** The package.json includes `cross-env` for Windows compatibility.
+
+### 3. Set Up Database
+
+**Option A: Local MySQL**
+
+```sql
+CREATE DATABASE dishswap;
+CREATE USER 'dishswap_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON dishswap.* TO 'dishswap_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+**Option B: PlanetScale (Recommended)**
+
+1. Sign up at [planetscale.com](https://planetscale.com)
+2. Create a database named "dishswap"
+3. Copy the connection string
+
+### 4. Configure Environment Variables
+
+Copy the example file and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+**Required variables:**
+- `DATABASE_URL` - Your MySQL connection string
+- `JWT_SECRET` - Generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
+- `AWS_ACCESS_KEY_ID` - From AWS IAM
+- `AWS_SECRET_ACCESS_KEY` - From AWS IAM
+- `AWS_S3_BUCKET` - Your S3 bucket name
+- `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` - Email service credentials
+
+**Optional variables:**
+- Google OAuth credentials
+- Facebook OAuth credentials
+- Google Maps API key
+- OpenAI API key
+- Sentry DSN
+
+See `docs/DISHSWAP_EXTERNAL_API_SETUP_GUIDE.md` for detailed setup instructions for each service.
+
+### 5. Initialize Database
+
+```bash
 pnpm db:push
+```
 
-# Start development server
+This creates all necessary tables in your database.
+
+### 6. Start Development Server
+
+```bash
 pnpm dev
 ```
 
-The app will be available at `http://localhost:3000`
+The application will be available at `http://localhost:3000`
 
-### Database Management
+### 7. Create an Account
 
-```bash
-# Generate migration
-pnpm db:generate
+1. Navigate to `http://localhost:3000`
+2. Click "Get Started" or "Sign Up"
+3. Fill in your details and create an account
+4. Check your email for verification link (if SMTP is configured)
+5. Log in and set up your profile
 
-# Push schema changes
-pnpm db:push
-
-# Open Drizzle Studio
-pnpm db:studio
-```
-
-### Running Tests
+## Available Scripts
 
 ```bash
-# Run all tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
+pnpm dev          # Start development server
+pnpm build        # Build for production
+pnpm start        # Start production server
+pnpm test         # Run tests
+pnpm db:push      # Push schema changes to database
+pnpm db:studio    # Open Drizzle Studio (database GUI)
 ```
 
 ## Project Structure
 
 ```
-client/
-  src/
-    pages/        # Page components
-    components/   # Reusable UI components
-    lib/          # Utilities and tRPC client
-    _core/        # Core hooks and contexts
-server/
-  routers.ts      # tRPC API routes
-  db.ts           # Database queries
-  _core/          # Core server utilities
-  auth/           # Authentication routes
-drizzle/
-  schema.ts       # Database schema
+dishswap/
+├── client/               # Frontend React application
+│   ├── src/
+│   │   ├── pages/       # Page components
+│   │   ├── components/  # Reusable UI components
+│   │   ├── lib/         # tRPC client, utilities
+│   │   └── _core/       # Framework code (auth hooks, etc.)
+│   └── index.html
+├── server/              # Backend Express + tRPC
+│   ├── routers.ts       # tRPC procedures
+│   ├── db.ts            # Database queries
+│   ├── auth/            # Authentication logic
+│   └── _core/           # Framework code (server setup, etc.)
+├── drizzle/             # Database schema and migrations
+│   └── schema.ts
+├── shared/              # Shared types and constants
+├── docs/                # Documentation
+└── package.json
 ```
+
+## Authentication System
+
+DishSwap uses a custom authentication system with:
+
+- **Email/Password**: Bcrypt-hashed passwords, JWT access and refresh tokens
+- **Email Verification**: Nodemailer sends verification emails
+- **Password Reset**: Secure token-based password reset flow
+- **Social OAuth**: Google and Facebook login via Passport.js
+- **Session Management**: HTTP-only cookies for security
+
+All authentication routes are under `/api/auth`:
+- `POST /api/auth/register` - Create account
+- `POST /api/auth/login` - Log in
+- `POST /api/auth/logout` - Log out
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password
+- `GET /api/auth/google` - Google OAuth
+- `GET /api/auth/facebook` - Facebook OAuth
+
+## Testing
+
+Run the test suite:
+
+```bash
+pnpm test
+```
+
+All 24 backend tests should pass, covering:
+- Authentication (register, login, logout, OAuth)
+- Session workflow (create, apply, confirm, update status)
+- Messaging system
+- User profiles
 
 ## Deployment
 
-### Web Application
+See the deployment guides in the `docs/` directory:
 
-1. Build the application:
+- **Local Setup**: `docs/DISHSWAP_LOCAL_SETUP_GUIDE.md`
+- **Render Deployment**: `docs/DISHSWAP_RENDER_DEPLOYMENT_GUIDE.md`
+- **External APIs**: `docs/DISHSWAP_EXTERNAL_API_SETUP_GUIDE.md`
+
+## Mobile App
+
+The React Native mobile app is in a separate repository:
+
 ```bash
-pnpm build
+git clone https://github.com/richard-d-lee/dishswap-mobile.git
 ```
 
-2. Deploy to your hosting provider (Vercel, Railway, Render, etc.)
+See the mobile app README for setup instructions.
 
-3. Set environment variables in your hosting platform
+## Common Issues
 
-### Mobile Application
+### Port 3000 Already in Use
 
-See `/dishswap-mobile` directory for React Native mobile app.
+**Windows:**
+```powershell
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+```
 
-## API Documentation
+**Mac/Linux:**
+```bash
+lsof -ti:3000 | xargs kill -9
+```
 
-The application uses tRPC for type-safe APIs. Key routers:
+### Database Connection Failed
 
-- `auth` - Authentication (login, register, logout)
-- `sessions` - Session management (create, browse, apply)
-- `messages` - Real-time messaging
-- `ratings` - Rating and review system
-- `profiles` - User profile management
-- `photos` - Photo upload and management
+1. Verify MySQL is running
+2. Check `DATABASE_URL` format in `.env`
+3. Test connection: `mysql -h localhost -u dishswap_user -p`
+
+### Photo Upload Fails
+
+1. Verify AWS credentials in `.env`
+2. Check S3 bucket CORS configuration
+3. Ensure IAM user has `PutObject` permission
+
+### Email Not Sending
+
+1. For Gmail: Enable 2FA and use app-specific password
+2. For SendGrid: Verify sender identity
+3. Check SMTP credentials in `.env`
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -am 'Add new feature'`
+4. Push to the branch: `git push origin feature/my-feature`
 5. Submit a pull request
 
 ## License
 
-MIT
+MIT License - see LICENSE file for details
 
 ## Support
 
-For issues and questions, please open a GitHub issue.
+For issues and questions:
+- Open an issue on GitHub: [github.com/richard-d-lee/dishswap/issues](https://github.com/richard-d-lee/dishswap/issues)
+- Check the documentation in the `docs/` directory
+- Review the External API Setup Guide for service-specific help
 
 ## Links
 
 - [GitHub Repository](https://github.com/richard-d-lee/dishswap)
 - [Mobile App Repository](https://github.com/richard-d-lee/dishswap-mobile)
+
+## Acknowledgments
+
+Built with:
+- [React](https://react.dev)
+- [tRPC](https://trpc.io)
+- [Drizzle ORM](https://orm.drizzle.team)
+- [TailwindCSS](https://tailwindcss.com)
+- [Expo](https://expo.dev)
+- [Socket.IO](https://socket.io)

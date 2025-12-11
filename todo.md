@@ -532,3 +532,13 @@
 - [x] Create external API configuration guide
 - [x] Document all environment variables
 - [x] Save checkpoint and deliver guides
+
+## Remove Manus OAuth Dependencies
+- [x] Remove Manus OAuth references from const.ts
+- [x] Update useAuth hook to use custom auth only
+- [x] Remove OAuth callback route (AuthCallback page handles Google/Facebook OAuth)
+- [x] Update main.tsx error handler
+- [x] Create .env.example template
+- [x] Update README with setup instructions
+- [x] Test authentication flow (all 24 tests passing)
+- [ ] Push to GitHub
