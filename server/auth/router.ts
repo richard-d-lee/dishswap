@@ -494,7 +494,7 @@ router.get('/google/callback',
       });
 
       // Redirect to frontend with tokens
-      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`;
+      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`;
       res.redirect(redirectUrl);
     } catch (error) {
       console.error('[Auth] Google OAuth callback error:', error);
@@ -540,7 +540,7 @@ router.get('/facebook/callback',
       });
 
       // Redirect to frontend with tokens
-      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`;
+      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`;
       res.redirect(redirectUrl);
     } catch (error) {
       console.error('[Auth] Facebook OAuth callback error:', error);
