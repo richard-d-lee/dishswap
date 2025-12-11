@@ -3,7 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { getDb } from '../db';
 import { users, oauthAccounts } from '../../drizzle/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 
 // Environment variables for OAuth
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
@@ -72,7 +72,7 @@ async function findOrCreateOAuthUser(profile: OAuthProfile) {
     const firstName = profile.name?.givenName || profile.displayName?.split(' ')[0] || null;
     const lastName = profile.name?.familyName || profile.displayName?.split(' ').slice(1).join(' ') || null;
 
-    const insertResult: any = await db.insert(users).values({
+    const insertResult = await db.insert(users).values({
       email: email || '',
       firstName,
       lastName,
@@ -80,14 +80,19 @@ async function findOrCreateOAuthUser(profile: OAuthProfile) {
       role: 'user',
     });
 
-    const userId = Number(insertResult.insertId);
-
-    user = await db
+    // Get the inserted user by email since insertId might not be reliable
+    const newUsers = await db
       .select()
       .from(users)
-      .where(eq(users.id, userId))
-      .limit(1)
-      .then(rows => rows[0]);
+      .where(eq(users.email, email || ''))
+      .orderBy(desc(users.createdAt))
+      .limit(1);
+    
+    user = newUsers[0];
+    
+    if (!user) {
+      throw new Error('Failed to create user');
+    }
   }
 
   // Link OAuth account to user
