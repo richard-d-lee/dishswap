@@ -3,6 +3,12 @@ import * as Sentry from "@sentry/react";
 export function initSentry() {
   const dsn = import.meta.env.VITE_SENTRY_DSN;
   
+  // Disable Sentry in development
+  if (import.meta.env.MODE === "development") {
+    console.log("[Sentry] Disabled in development mode");
+    return;
+  }
+  
   if (!dsn) {
     console.warn("[Sentry] VITE_SENTRY_DSN not configured, error tracking disabled");
     return;
